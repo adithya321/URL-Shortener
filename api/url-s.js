@@ -5,15 +5,16 @@ module.exports = function(app, db) {
     if(validURLRegex.test(url)) {
       newUrlObj = {
         "original_url": url,
-        "short_url": process.env.APP_URL
+        "short_url": process.env.APP_URL + (Math.floor(Math.random()*90000) + 10000).toString()
       };
+      res.send(newUrlObj);
       save(newUrlObj, db);
     } else {
       newUrlObj = {
         "error": "Wrong url format"
       };
+      res.send(newUrlObj);
     }
-    res.send(newUrlObj);
   });
 
   function save(obj, db) {
