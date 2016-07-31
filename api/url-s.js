@@ -2,7 +2,7 @@ module.exports = function(app, db) {
   var sites = db.collection('sites');
 
   app.get('/:url', function(req, res) {
-    var url = process.env.APP_URL + req.url;
+    var url = process.env.APP_URL + req.params.url;
     sites.findOne({
       "short_url": url
     }, function(err, result) {
@@ -11,7 +11,7 @@ module.exports = function(app, db) {
         res.redirect(result.original_url);
       } else {
         res.send({
-          "error": "This url is not in the database."
+          "error": url + " is not in the database."
         });
       }
     });
