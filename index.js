@@ -12,9 +12,18 @@ MongoClient.connect(process.env.MONGOLAB_URI || url,
 		} else {
 			console.log('Successfully connected to MongoDB on port 27017.');
 		}
+		db.createCollection("sites", {
+			capped: true,
+			size: 5242880,
+			max: 5000
+		});
 	});
 
 app.get('/', function (req, res) {
+	res.sendFile(process.cwd() + '/public/index.html');
+});
+
+app.get('/new', function (req, res) {
 	res.sendFile(process.cwd() + '/public/index.html');
 });
 
@@ -22,7 +31,7 @@ app.get('/new/:url*', function(req, res) {
 	var url = req.url.slice(5);
 	var newUrlObj = {};
 	if(validURLRegex.test(url)) {
-		urlObj = {
+		newUrlObj = {
 			"original_url": url,
 			"short_url": process.env.APP_URL
 		};
