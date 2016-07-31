@@ -1,4 +1,22 @@
 module.exports = function(app, db) {
+  var sites = db.collection('sites');
+
+  app.get('/:url', function(req, res) {
+    var url = process.env.APP_URL + req.url;
+    sites.findOne({
+      "short_url": url
+    }, function(err, result) {
+      if (err) throw err;
+      if (result) {
+        res.redirect(result.original_url);
+      } else {
+        res.send({
+          "error": "This url is not in the database."
+        });
+      }
+    });
+  });
+
   app.get('/new/:url*', function(req, res) {
     var url = req.url.slice(5);
     var newUrlObj = {};
@@ -18,7 +36,6 @@ module.exports = function(app, db) {
   });
 
   function save(obj, db) {
-    var sites = db.collection('sites');
     sites.save(obj, function(err, result) {
       if (err) throw err;
       console.log('Saved ' + result);
