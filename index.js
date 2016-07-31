@@ -1,6 +1,18 @@
 var express = require('express');
+var mongodb = require('mongodb');
 var app = express();
+var MongoClient = mongodb.MongoClient;
 var port = process.env.PORT || 8080;
+var url = 'mongodb://localhost:27017/urls';
+
+MongoClient.connect(process.env.MONGOLAB_URI || url, 
+	function(err, db) {
+		if (err) {
+			throw new Error('Database failed to connect!');
+		} else {
+			console.log('Successfully connected to MongoDB on port 27017.');
+		}
+	});
 
 app.get('/', function (req, res) {
 	res.sendFile(process.cwd() + '/public/index.html');
@@ -10,7 +22,10 @@ app.get('/new/:url*', function(req, res) {
 	var url = req.url.slice(5);
 	var newUrlObj = {};
 	if(validURLRegex.test(url)) {
-
+		urlObj = {
+			"original_url": url,
+			"short_url": process.env.APP_URL
+		};
 	} else {
 		newUrlObj = {
 			"error": "Wrong url format"
@@ -23,6 +38,7 @@ app.listen(port, function () {
 	console.log('Example app listening on port ' + port);
 });
 
+// Regex from https://gist.github.com/dperini/729294
 var validURLRegex = new RegExp(
 	"^" +
     // protocol identifier
